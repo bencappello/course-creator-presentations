@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Employee Training Course</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #f7fafc;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #718096;
+            font-size: 18px;
+            transition: all 0.2s ease;
+        }
+        
+        .close-btn:hover {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            color: #1a202c;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+        
+        .chat-container {
+            margin-bottom: 16px;
+            min-height: 0;
+        }
+        
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .message.ai {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .message.ai .message-avatar {
+            display: none;
+        }
+        
+        .message.user {
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .message.ai .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .message.user .message-avatar {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .message-content {
+            max-width: 80%;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #2d3748;
+        }
+        
+        .message.ai .message-content {
+            background: transparent;
+            border: none;
+            padding: 0;
+            max-width: 100%;
+            color: #2d3748;
+        }
+        
+        .message.user .message-content {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px 20px;
+        }
+        
+        .initial-prompt {
+            text-align: center;
+            color: #4a5568;
+            font-size: 18px;
+            margin-bottom: 24px;
+        }
+        
+        .examples-container {
+            margin-top: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .examples-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #718096;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .examples-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            padding-right: 40px;
+            margin-right: -40px;
+            width: calc(100% + 20px);
+        }
+        
+        .examples-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .examples-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+        
+        .examples-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 3px;
+        }
+        
+        .examples-scroll::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+        
+        .example-prompt {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 500;
+            color: #2d3748;
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-width: fit-content;
+        }
+        
+        .example-prompt:hover {
+            border-color: #4299e1;
+            background: #edf8ff;
+            transform: translateY(-1px);
+        }
+        
+        .example-prompt:active {
+            transform: translateY(0);
+        }
+        
+        .input-section {
+            position: relative;
+            margin-bottom: 24px;
+        }
+        
+        .text-input {
+            width: 100%;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px 60px 50px 20px;
+            font-size: 16px;
+            color: #2d3748;
+            background: white;
+            transition: border-color 0.2s ease;
+            resize: none;
+            min-height: 120px;
+            max-height: 200px;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+        
+        .input-buttons-left {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .input-buttons-right {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+
+        
+        .text-input:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+        
+        .text-input::placeholder {
+            color: #a0aec0;
+        }
+        
+        .send-btn {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: transform 0.2s ease;
+        }
+        
+        .web-search-btn-inline {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            background: white;
+            color: #718096;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .web-search-btn-inline.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .web-search-btn-inline:hover:not(.active) {
+            border-color: #4299e1;
+            color: #4299e1;
+        }
+        
+        .add-docs-btn-inline {
+            width: 32px;
+            height: 32px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            color: #718096;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .add-docs-btn-inline:hover {
+            border-color: #4299e1;
+            color: #4299e1;
+        }
+        
+        .send-btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .send-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .create-course-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #4299e1 0%, #9f7aea 100%);
+            color: white;
+            padding: 18px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin-top: 24px;
+            margin-bottom: 12px;
+            display: none;
+        }
+        
+        .create-course-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .create-course-btn.show {
+            display: block;
+        }
+        
+        .cancel-btn {
+            width: 100%;
+            background: #f8f9fa;
+            color: #495057;
+            padding: 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .cancel-btn:hover {
+            background: #e9ecef;
+            color: #343a40;
+        }
+        
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: #e6f3ff;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            max-width: 100px;
+        }
+        
+        .typing-indicator.show {
+            display: flex;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #4299e1;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.hidden {
+            display: none !important;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 24px;
+        }
+        
+        .modal-section {
+            margin-bottom: 24px;
+        }
+        
+        .modal-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 12px;
+        }
+        
+        .knowledge-sets-dropdown {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #4a5568;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .selected-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #edf2f7;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #4a5568;
+            margin-top: 8px;
+        }
+        
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+        }
+        
+        .toggle-label {
+            font-size: 16px;
+            color: #2d3748;
+            font-weight: 500;
+        }
+        
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            background: #e2e8f0;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .toggle-switch.active {
+            background: #4299e1;
+        }
+        
+        .toggle-slider {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s ease;
+        }
+        
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(20px);
+        }
+        
+        .modal-textarea {
+            width: 100%;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 14px;
+            color: #2d3748;
+            background: white;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+            line-height: 1.4;
+        }
+        
+        .modal-textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+        
+        .modal-btn.cancel {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .modal-btn.cancel:hover {
+            background: #edf2f7;
+        }
+        
+        .modal-btn.save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .modal-btn.save:hover {
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L14.09 8.26L20 9L14.5 14.74L15.82 21L12 17.77L8.18 21L9.5 14.74L4 9L9.91 8.26L12 2Z" fill="currentColor"/>
+            </svg>
+        </div>
+        
+        <h1 class="title">Create Employee Training Course</h1>
+        <p class="subtitle">Tell us about your training needs and we'll create a customized course for your team</p>
+        
+        <div class="chat-container" id="chatContainer">
+            <div class="initial-prompt" id="initialPrompt">
+                Describe what you want your employees to learn. Include details like the role or skill area, your team's current knowledge level, specific company processes or tools to cover, and your learning objectives.
+            </div>
+        </div>
+        
+        <div class="input-section">
+            <textarea 
+                class="text-input" 
+                id="messageInput"
+                placeholder="Describe what you want your employees to learn. Include details like: the role or skill area, your team's current knowledge level, specific company processes or tools to cover, and your learning objectives..."
+                rows="4"
+            ></textarea>
+            <div class="input-buttons-left">
+                <button class="add-docs-btn-inline" onclick="openDocumentsModal()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <button class="web-search-btn-inline active" id="webSearchBtn" onclick="toggleWebSearch()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                        <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    Web Search
+                </button>
+            </div>
+            <div class="input-buttons-right">
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                    ↑
+                </button>
+            </div>
+        </div>
+        
+        <div class="examples-container" id="examplesContainer">
+            <div class="examples-title">Click to view example prompts:</div>
+            
+            <div class="examples-scroll">
+                <div class="example-prompt" onclick="fillInput(this)" data-full-text="I need to create an onboarding course for new sales reps. They're coming in with varying levels of sales experience, but none know our specific products (SaaS CRM tools) or our sales methodology. The course should be comprehensive enough to get them ready to take calls within 2 weeks.">
+                    Sales Onboarding
+                </div>
+                
+                <div class="example-prompt" onclick="fillInput(this)" data-full-text="Our engineering team needs training on our new deployment pipeline and DevOps practices. Most are senior developers but haven't used Kubernetes or our specific CI/CD setup. Looking for hands-on training that covers both theory and practical implementation.">
+                    DevOps Training
+                </div>
+                
+                <div class="example-prompt" onclick="fillInput(this)" data-full-text="I want to train our customer success team on advanced product features so they can better support enterprise clients. The team knows the basics but needs deep knowledge of integrations, API usage, and troubleshooting complex customer scenarios.">
+                    Customer Success
+                </div>
+                
+                <div class="example-prompt" onclick="fillInput(this)" data-full-text="Need a compliance and security training course for all employees. Should cover data privacy regulations, our security policies, and incident response procedures. Mixed audience from different departments with varying technical backgrounds.">
+                    Compliance Training
+                </div>
+                
+                <div class="example-prompt" onclick="fillInput(this)" data-full-text="I need to train our product managers on user research methodologies and data analysis. They have business backgrounds but need to learn how to conduct user interviews, analyze usage data, and make data-driven product decisions.">
+                    Product Management
+                </div>
+                
+                <div class="example-prompt" onclick="fillInput(this)" data-full-text="Our marketing team needs training on our new brand guidelines and content creation processes. They're experienced marketers but need to understand our specific voice, visual identity, and approval workflows for different types of content.">
+                    Brand Guidelines
+                </div>
+            </div>
+        </div>
+        
+        <button class="create-course-btn" id="createCourseBtn" onclick="createCourse()">
+            🧠 Generate My Course
+        </button>
+        <button class="cancel-btn">Cancel</button>
+    </div>
+
+    <!-- Documents Modal -->
+    <div class="modal-overlay hidden" id="documentsModal">
+        <div class="modal">
+            <button class="close-btn" style="top: 16px; right: 16px;" onclick="closeDocumentsModal()">×</button>
+            
+            <h2 class="modal-title">Resources</h2>
+            
+            <div class="modal-section">
+                <div class="modal-section-title">Knowledge Sets</div>
+                <div class="knowledge-sets-dropdown" onclick="toggleKnowledgeDropdown()">
+                    <span>1 selected</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="selected-item">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M14 2v6h6" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    test (1 files)
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="cursor: pointer;">
+                        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="modal-section">
+                <div class="toggle-container">
+                    <div class="toggle-label">Only Use Documents as Data Source</div>
+                    <div class="toggle-switch" id="documentsToggle" onclick="toggleDocumentsOnly()">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-section">
+                <div class="modal-section-title">Documents Instructions</div>
+                <textarea 
+                    class="modal-textarea" 
+                    placeholder="Provide any specific instructions for using the selected documents..."
+                ></textarea>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeDocumentsModal()">Cancel</button>
+                <button class="modal-btn save" onclick="saveDocuments()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let conversationStep = 0;
+        let webSearchEnabled = true;
+        let documentsOnlyMode = false;
+        
+        function closeModal() {
+            // In a real implementation, this would close the modal
+            alert('Modal would close here');
+        }
+        
+        function toggleWebSearch() {
+            webSearchEnabled = !webSearchEnabled;
+            const btn = document.getElementById('webSearchBtn');
+            if (webSearchEnabled) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        }
+        
+        function openDocumentsModal() {
+            document.getElementById('documentsModal').classList.remove('hidden');
+        }
+        
+        function closeDocumentsModal() {
+            document.getElementById('documentsModal').classList.add('hidden');
+        }
+        
+        function toggleDocumentsOnly() {
+            documentsOnlyMode = !documentsOnlyMode;
+            const toggle = document.getElementById('documentsToggle');
+            if (documentsOnlyMode) {
+                toggle.classList.add('active');
+            } else {
+                toggle.classList.remove('active');
+            }
+        }
+        
+        function toggleKnowledgeDropdown() {
+            // In a real implementation, this would show/hide the dropdown options
+            alert('Knowledge sets dropdown would open here');
+        }
+        
+        function saveDocuments() {
+            // In a real implementation, this would save the document settings
+            closeDocumentsModal();
+            alert('Document settings saved');
+        }
+        
+        function closeModal() {
+            // In a real implementation, this would close the modal
+            alert('Modal would close here');
+        }
+        
+        function fillInput(element) {
+            const textInput = document.getElementById('messageInput');
+            textInput.value = element.getAttribute('data-full-text');
+            textInput.focus();
+            autoResize();
+            
+            // Add a subtle animation to show the text was filled
+            element.style.background = '#e6fffa';
+            element.style.borderColor = '#38b2ac';
+            setTimeout(() => {
+                element.style.background = '#f7fafc';
+                element.style.borderColor = '#e2e8f0';
+            }, 500);
+        }
+        
+        function autoResize() {
+            const textarea = document.getElementById('messageInput');
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(Math.max(textarea.scrollHeight, 120), 200) + 'px';
+        }
+        
+        function addMessage(content, isUser = false) {
+            const chatContainer = document.getElementById('chatContainer');
+            const initialPrompt = document.getElementById('initialPrompt');
+            const examplesContainer = document.getElementById('examplesContainer');
+            
+            // Hide initial prompt and examples after first message
+            if (conversationStep === 0) {
+                initialPrompt.classList.add('hidden');
+                examplesContainer.classList.add('hidden');
+            }
+            
+            const message = document.createElement('div');
+            message.className = `message ${isUser ? 'user' : 'ai'}`;
+            
+            if (isUser) {
+                message.innerHTML = `
+                    <div class="message-avatar">BC</div>
+                    <div class="message-content">${content}</div>
+                `;
+            } else {
+                message.innerHTML = `
+                    <div class="message-content">${content}</div>
+                `;
+            }
+            
+            chatContainer.appendChild(message);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        function showTypingIndicator() {
+            const chatContainer = document.getElementById('chatContainer');
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'message ai';
+            typingIndicator.innerHTML = `
+                <div class="message-avatar">AI</div>
+                <div class="typing-indicator show">
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            `;
+            typingIndicator.id = 'typingIndicator';
+            chatContainer.appendChild(typingIndicator);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addMessage(message, true);
+            input.value = '';
+            autoResize();
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Simulate AI response based on conversation step
+            setTimeout(() => {
+                hideTypingIndicator();
+                
+                if (conversationStep === 0) {
+                    // First AI response - ask for more details
+                    addMessage("Thanks for that detailed description! I can see you want to create training for your team. To make sure I create the perfect course, could you tell me:<br><br>• How long should this training take to complete?<br>• What's your preferred format (self-paced modules, live sessions, or mixed)?<br>• Do you have any existing training materials I should incorporate?<br>• How will you measure success for this training?");
+                    conversationStep = 1;
+                } else if (conversationStep === 1) {
+                    // Second AI response - confirm and show create button
+                    addMessage("Perfect! I now have everything I need to create your course. Here's what I'll build:<br><br>📚 <strong>Custom training course</strong> tailored to your team's specific needs<br>🎯 <strong>Interactive lessons</strong> with hands-on exercises<br>📝 <strong>Knowledge assessments</strong> and progress tracking<br>🔄 <strong>Practical scenarios</strong> based on your real use cases<br><br>Ready to generate your course?");
+                    
+                    // Show the create course button
+                    document.getElementById('createCourseBtn').classList.add('show');
+                    conversationStep = 2;
+                }
+            }, 1500);
+        }
+        
+        function createCourse() {
+            const btn = document.getElementById('createCourseBtn');
+            btn.disabled = true;
+            btn.textContent = '🧠 Creating your course...';
+            
+            setTimeout(() => {
+                alert('Course creation would begin here!');
+                btn.disabled = false;
+                btn.textContent = '🧠 Generate My Course';
+            }, 2000);
+        }
+        
+        // Auto-resize textarea as user types
+        document.getElementById('messageInput').addEventListener('input', autoResize);
+        
+        // Send message with Enter key
+        document.getElementById('messageInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
